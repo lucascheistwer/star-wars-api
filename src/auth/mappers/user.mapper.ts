@@ -1,5 +1,5 @@
 import { UserDto } from "src/users/dto/user.dto";
-import { User } from "src/users/schemas/user";
+import { User } from "src/users/schemas/user.schema";
 
 export const mapCreateUserResponse = (user: User): UserDto => ({
   firstName: user.firstName,
