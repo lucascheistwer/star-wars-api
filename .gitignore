@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+.env
+.vscode/
+*.tsbuildinfo
+.DS_Store
+coverage/
+*.tmp
+*.temp
+swagger.json
+swagger.yaml
