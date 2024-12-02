@@ -1,3 +1,4 @@
+import { OmitType } from "@nestjs/swagger";
 import { IsEmail, IsNotEmpty, IsString, MinLength } from "class-validator";
 
 export class CreateUserDto {
@@ -16,3 +17,5 @@ export class CreateUserDto {
   @MinLength(6)
   password: string;
 }
+
+export class UserDto extends OmitType(CreateUserDto, ["password"]) {}
