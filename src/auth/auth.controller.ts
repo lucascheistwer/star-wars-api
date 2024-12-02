@@ -10,6 +10,7 @@ import { AuthService } from "./auth.service";
 import { CreateUserDto } from "src/users/dto/user.dto";
 import { UsersService } from "src/users/users.service";
 import { LoginDto } from "./dto/login.dto";
+import { mapCreateUserResponse } from "./mappers/user.mapper";
 
 @Controller("auth")
 export class AuthController {
@@ -28,9 +29,6 @@ export class AuthController {
   @Post("register")
   async create(@Body(new ValidationPipe()) body: CreateUserDto) {
     const createdUser = await this.usersService.create(body);
-    return {
-      message: "User created successfully",
-      data: createdUser,
-    };
+    return mapCreateUserResponse(createdUser);
   }
 }
