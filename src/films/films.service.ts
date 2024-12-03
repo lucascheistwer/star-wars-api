@@ -17,7 +17,7 @@ export class FilmsService {
   ) {}
 
   async syncFilms() {
-    const films = await this.getFilms();
+    const films = await this.getFilmsFromApi();
     const operations = films.map((film) => ({
       updateOne: {
         filter: { title: film.title },
@@ -32,7 +32,11 @@ export class FilmsService {
     };
   }
 
-  private async getFilms(): Promise<SwapiFilm[]> {
+  async getFilms() {
+    return this.filmModel.find();
+  }
+
+  private async getFilmsFromApi(): Promise<SwapiFilm[]> {
     const SWAPI_URL = this.configService.get<string>("SWAPI_URL");
     const { data } = await firstValueFrom(
       this.httpService.get<SwapiFilmsResponse>(`${SWAPI_URL}/films`).pipe(
