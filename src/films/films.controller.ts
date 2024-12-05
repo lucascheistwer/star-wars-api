@@ -1,18 +1,49 @@
-import { Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+  ValidationPipe,
+} from "@nestjs/common";
 import { FilmsService } from "./films.service";
 import { mapFilmToDto } from "./mappers/film.mapper";
 import { RolesGuard } from "src/common/guards/roles.guard";
 import { Roles } from "src/common/guards/roles.decorator";
 import { Role } from "src/common/enums/roles.enum";
 import { ValidateObjectIdPipe } from "src/common/pipes/object-id.pipe";
+import { CreateFilmDto, UpdateFilmDto } from "./dto/film.dto";
 
 @Controller("films")
 export class FilmsController {
   constructor(private readonly filmsService: FilmsService) {}
 
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
   @Post("sync")
   async syncFilms() {
     return this.filmsService.syncFilms();
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @Post()
+  async createFilm(@Body(new ValidationPipe()) createFilmDto: CreateFilmDto) {
+    const film = await this.filmsService.createFilm(createFilmDto);
+    return mapFilmToDto(film);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @Patch(":id")
+  async updateFilm(
+    @Param("id", ValidateObjectIdPipe) id: string,
+    @Body(new ValidationPipe()) updateFilmDto: UpdateFilmDto
+  ) {
+    const film = await this.filmsService.updateFilm(id, updateFilmDto);
+    return mapFilmToDto(film);
   }
 
   @Get()

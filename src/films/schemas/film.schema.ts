@@ -7,7 +7,7 @@ export type FilmDocument = HydratedDocument<Film>;
 export class Film {
   _id: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   title: string;
 
   @Prop()
@@ -16,13 +16,13 @@ export class Film {
   @Prop()
   openingCrawl?: string;
 
-  @Prop({ required: true })
+  @Prop()
   director: string;
 
   @Prop()
   producer: string;
 
-  @Prop()
+  @Prop({ required: true })
   releaseDate?: string;
 
   @Prop({ type: [String], default: [] })

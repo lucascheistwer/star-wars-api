@@ -1,5 +1,6 @@
 import { HttpService } from "@nestjs/axios";
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   ServiceUnavailableException,
@@ -11,6 +12,7 @@ import { ConfigService } from "@nestjs/config";
 import { InjectModel } from "@nestjs/mongoose";
 import { Film } from "./schemas/film.schema";
 import { Model } from "mongoose";
+import { CreateFilmDto, UpdateFilmDto } from "./dto/film.dto";
 
 @Injectable()
 export class FilmsService {
@@ -46,6 +48,22 @@ export class FilmsService {
       throw new NotFoundException("Film not found");
     }
     return film;
+  }
+
+  async createFilm(film: CreateFilmDto): Promise<Film> {
+    const existingFilm = await this.filmModel.findOne({ title: film.title });
+    if (existingFilm) {
+      throw new BadRequestException("Film already exists");
+    }
+    return this.filmModel.create(film);
+  }
+
+  async updateFilm(id: string, film: UpdateFilmDto): Promise<Film> {
+    const existingFilm = await this.filmModel.findById(id);
+    if (!existingFilm) {
+      throw new NotFoundException("Film not found");
+    }
+    return this.filmModel.findByIdAndUpdate(id, film, { new: true });
   }
 
   private async getFilmsFromApi(): Promise<SwapiFilm[]> {

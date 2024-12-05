@@ -1,5 +1,4 @@
 import { FilmDto } from "src/films/dto/film.dto";
-import { Film } from "src/films/schemas/film.schema";
 
 export const mockFilm = {
   _id: "674e140ab826f02432119699",
@@ -14,6 +13,14 @@ export const mockFilm = {
   species: ["https://swapi.dev/api/species/1/"],
   created: "2014-12-10T14:23:31.880000Z",
   edited: "2014-12-20T19:49:45.256000Z",
+};
+
+export const createFilmMock = {
+  title: "A New Hope",
+  episodeId: 4,
+  director: "George Lucas",
+  producer: "Gary Kurtz, Rick McCallum",
+  releaseDate: "1977-05-25",
 };
 
 export const mockFilms = [mockFilm] as FilmDto[];
