@@ -3,6 +3,7 @@ export type FilmDto = {
   title: string;
   releaseDate: string;
   url: string;
+  episodeId?: number;
   director: string;
   producer: string;
   openingCrawl: string;

@@ -4,13 +4,14 @@ import { getModelToken } from "@nestjs/mongoose";
 import { BadRequestException } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 import { CreateUserDto } from "./dto/user.dto";
+import { Role } from "src/common/enums/roles.enum";
 import { User } from "./schemas/user.schema";
 
 describe("UsersService", () => {
   let usersService: UsersService;
 
   const mockUserModel = {
-    findOne: jest.fn(),
+    findByEmail: jest.fn(),
     save: jest.fn(),
   };
 
@@ -47,7 +48,7 @@ describe("UsersService", () => {
       const mockHashedPassword = "mockHashedPassword";
       const mockSavedUser = { ...createUserDto, password: mockHashedPassword };
 
-      jest.spyOn(usersService, "findOne").mockResolvedValueOnce(null);
+      jest.spyOn(usersService, "findByEmail").mockResolvedValueOnce(null);
       jest.spyOn(bcrypt, "genSalt").mockResolvedValueOnce(mockSalt);
       jest.spyOn(bcrypt, "hash").mockResolvedValueOnce(mockHashedPassword);
 
@@ -55,7 +56,9 @@ describe("UsersService", () => {
 
       const result = await usersService.create(createUserDto);
 
-      expect(usersService.findOne).toHaveBeenCalledWith(createUserDto.email);
+      expect(usersService.findByEmail).toHaveBeenCalledWith(
+        createUserDto.email
+      );
       expect(bcrypt.genSalt).toHaveBeenCalled();
       expect(bcrypt.hash).toHaveBeenCalledWith(
         createUserDto.password,
@@ -64,6 +67,7 @@ describe("UsersService", () => {
       expect(MockUserModel).toHaveBeenCalledWith({
         ...createUserDto,
         password: mockHashedPassword,
+        role: Role.REGULAR,
       });
       expect(mockUserModel.save).toHaveBeenCalled();
       expect(result).toEqual(mockSavedUser);
@@ -80,14 +84,16 @@ describe("UsersService", () => {
       const mockExistingUser = { email: createUserDto.email };
 
       jest
-        .spyOn(usersService, "findOne")
+        .spyOn(usersService, "findByEmail")
         .mockResolvedValueOnce(mockExistingUser as User);
 
       await expect(usersService.create(createUserDto)).rejects.toThrow(
         BadRequestException
       );
 
-      expect(usersService.findOne).toHaveBeenCalledWith(createUserDto.email);
+      expect(usersService.findByEmail).toHaveBeenCalledWith(
+        createUserDto.email
+      );
       expect(bcrypt.genSalt).not.toHaveBeenCalled();
       expect(bcrypt.hash).not.toHaveBeenCalled();
       expect(mockUserModel.save).not.toHaveBeenCalled();

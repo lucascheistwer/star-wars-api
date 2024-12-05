@@ -1,7 +1,9 @@
+import { FilmDto } from "../dto/film.dto";
 import { Film } from "../schemas/film.schema";
 
-export const mapFilmToDto = (swapiFilm: Film) => ({
+export const mapFilmToDto = (swapiFilm: Film): FilmDto => ({
   _id: swapiFilm._id,
+  episodeId: swapiFilm.episodeId,
   title: swapiFilm.title,
   releaseDate: swapiFilm.releaseDate,
   url: swapiFilm.url,

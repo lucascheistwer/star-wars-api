@@ -10,20 +10,20 @@ export class Film {
   @Prop({ required: true })
   title: string;
 
-  @Prop({ required: true })
-  episodeId: number;
+  @Prop()
+  episodeId?: number;
 
-  @Prop({ required: true })
-  openingCrawl: string;
+  @Prop()
+  openingCrawl?: string;
 
   @Prop({ required: true })
   director: string;
 
-  @Prop({ required: true })
+  @Prop()
   producer: string;
 
-  @Prop({ required: true })
-  releaseDate: string;
+  @Prop()
+  releaseDate?: string;
 
   @Prop({ type: [String], default: [] })
   characters: string[];
@@ -40,13 +40,13 @@ export class Film {
   @Prop({ type: [String], default: [] })
   species: string[];
 
-  @Prop({ required: true })
+  @Prop()
   created: string;
 
-  @Prop({ required: true })
+  @Prop()
   edited: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop()
   url: string;
 }
 

@@ -1,5 +1,9 @@
 import { HttpService } from "@nestjs/axios";
-import { Injectable, ServiceUnavailableException } from "@nestjs/common";
+import {
+  Injectable,
+  NotFoundException,
+  ServiceUnavailableException,
+} from "@nestjs/common";
 import { SwapiFilm, SwapiFilmsResponse } from "./types/film.type";
 import { catchError, firstValueFrom } from "rxjs";
 import { AxiosError } from "axios";
@@ -32,8 +36,16 @@ export class FilmsService {
     };
   }
 
-  async getFilms() {
+  async getFilms(): Promise<Film[]> {
     return this.filmModel.find();
+  }
+
+  async getFilmById(id: string): Promise<Film> {
+    const film = await this.filmModel.findById(id);
+    if (!film) {
+      throw new NotFoundException("Film not found");
+    }
+    return film;
   }
 
   private async getFilmsFromApi(): Promise<SwapiFilm[]> {

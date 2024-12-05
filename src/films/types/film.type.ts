@@ -3,11 +3,11 @@ export type SwapiFilm = {
   created: string;
   director: string;
   edited: string;
-  episodeId: number;
-  openingCrawl: string;
+  episodeId?: number;
+  openingCrawl?: string;
   planets: string[];
   producer: string;
-  releaseDate: string;
+  releaseDate?: string;
   species: string[];
   starships: string[];
   title: string;
