@@ -9,7 +9,7 @@ This is a **NestJS** application built to provide a CRUD API for users and Star 
 Ensure you have the following installed on your system:
 
 - **Node.js** (v16 or later)
-- **npm** or **yarn**
+- **npm****
 - **Git**
 
 ---
