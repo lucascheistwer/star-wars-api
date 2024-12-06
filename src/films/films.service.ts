@@ -67,7 +67,6 @@ export class FilmsService {
   async deleteFilm(id: string) {
     const film = await this.filmModel.findByIdAndDelete(id);
     this.validateMongoResult(film);
-    return film;
   }
 
   private async getFilmsFromApi(): Promise<SwapiFilm[]> {
