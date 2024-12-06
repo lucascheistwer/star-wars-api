@@ -4,9 +4,13 @@ import { FilmsService } from "./films.service";
 import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import { UsersService } from "../users/users.service";
-import { mockFilm, mockFilms } from "../../test/mocks/film.mock";
+import {
+  createFilmMock,
+  mockFilm,
+  mockFilms,
+} from "../../test/mocks/film.mock";
 import { RolesGuard } from "src/common/guards/roles.guard";
-import { NotFoundException } from "@nestjs/common";
+import { BadRequestException, NotFoundException } from "@nestjs/common";
 
 describe("FilmsController", () => {
   let filmsController: FilmsController;
@@ -20,6 +24,9 @@ describe("FilmsController", () => {
       }),
       getFilms: jest.fn().mockResolvedValue(mockFilms),
       getFilmById: jest.fn().mockResolvedValue(mockFilm),
+      createFilm: jest.fn().mockResolvedValue(mockFilm),
+      updateFilm: jest.fn().mockResolvedValue(mockFilm),
+      deleteFilm: jest.fn().mockResolvedValue(mockFilm),
     };
 
     const mockUsersService = {
@@ -83,6 +90,55 @@ describe("FilmsController", () => {
       const exception = new NotFoundException("Film not found");
       jest.spyOn(filmsService, "getFilmById").mockRejectedValue(exception);
       await expect(filmsController.getFilmById(id)).rejects.toThrow(exception);
+    });
+  });
+
+  describe("createFilm", () => {
+    it("should call FilmsService.createFilm with the correct arguments", async () => {
+      await filmsController.createFilm(createFilmMock);
+      expect(filmsService.createFilm).toHaveBeenCalledWith(createFilmMock);
+    });
+
+    it("should throw an error if FilmsService.createFilm throws an error", async () => {
+      const exception = new BadRequestException("Film already exists");
+      jest.spyOn(filmsService, "createFilm").mockRejectedValue(exception);
+      await expect(filmsController.createFilm(createFilmMock)).rejects.toThrow(
+        exception
+      );
+    });
+  });
+
+  describe("updateFilm", () => {
+    it("should call FilmsService.updateFilm with the correct arguments", async () => {
+      const id = "1";
+      const updateFilmMock = { title: "Updated Film" };
+      await filmsController.updateFilm(id, updateFilmMock);
+      expect(filmsService.updateFilm).toHaveBeenCalledWith(id, updateFilmMock);
+    });
+
+    it("should throw an error if FilmsService.updateFilm throws an error", async () => {
+      const id = "2";
+      const updateFilmMock = { title: "Updated Film" };
+      const exception = new NotFoundException("Film not found");
+      jest.spyOn(filmsService, "updateFilm").mockRejectedValue(exception);
+      await expect(
+        filmsController.updateFilm(id, updateFilmMock)
+      ).rejects.toThrow(exception);
+    });
+  });
+
+  describe("deleteFilm", () => {
+    it("should call FilmsService.deleteFilm with the correct id", async () => {
+      const id = "1";
+      await filmsController.deleteFilm(id);
+      expect(filmsService.deleteFilm).toHaveBeenCalledWith(id);
+    });
+
+    it("should throw an error if FilmsService.deleteFilm throws an error", async () => {
+      const id = "2";
+      const exception = new NotFoundException("Film not found");
+      jest.spyOn(filmsService, "deleteFilm").mockRejectedValue(exception);
+      await expect(filmsController.deleteFilm(id)).rejects.toThrow(exception);
     });
   });
 });

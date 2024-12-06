@@ -1,5 +1,6 @@
 import { HttpService } from "@nestjs/axios";
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   ServiceUnavailableException,
@@ -11,6 +12,7 @@ import { ConfigService } from "@nestjs/config";
 import { InjectModel } from "@nestjs/mongoose";
 import { Film } from "./schemas/film.schema";
 import { Model } from "mongoose";
+import { CreateFilmDto, UpdateFilmDto } from "./dto/film.dto";
 
 @Injectable()
 export class FilmsService {
@@ -42,9 +44,29 @@ export class FilmsService {
 
   async getFilmById(id: string): Promise<Film> {
     const film = await this.filmModel.findById(id);
-    if (!film) {
-      throw new NotFoundException("Film not found");
+    this.validateMongoResult(film);
+    return film;
+  }
+
+  async createFilm(film: CreateFilmDto): Promise<Film> {
+    const existingFilm = await this.filmModel.findOne({ title: film.title });
+    if (existingFilm) {
+      throw new BadRequestException("Film already exists");
     }
+    return this.filmModel.create(film);
+  }
+
+  async updateFilm(id: string, film: UpdateFilmDto): Promise<Film> {
+    const updatedFilm = await this.filmModel.findByIdAndUpdate(id, film, {
+      new: true,
+    });
+    this.validateMongoResult(updatedFilm);
+    return updatedFilm;
+  }
+
+  async deleteFilm(id: string) {
+    const film = await this.filmModel.findByIdAndDelete(id);
+    this.validateMongoResult(film);
     return film;
   }
 
@@ -58,5 +80,11 @@ export class FilmsService {
       )
     );
     return data.results;
+  }
+
+  private validateMongoResult(film: Film | null) {
+    if (!film) {
+      throw new NotFoundException("Film not found");
+    }
   }
 }

@@ -5,9 +5,14 @@ import { ConfigService } from "@nestjs/config";
 import { getModelToken } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Film } from "./schemas/film.schema";
-import { NotFoundException, ServiceUnavailableException } from "@nestjs/common";
+import {
+  BadRequestException,
+  NotFoundException,
+  ServiceUnavailableException,
+} from "@nestjs/common";
 import { of, throwError } from "rxjs";
 import { AxiosError } from "axios";
+import { createFilmMock } from "../../test/mocks/film.mock";
 
 const mockFilms = [{ title: "Film 1" }, { title: "Film 2" }];
 const mockAxiosResponse = {
@@ -37,6 +42,10 @@ describe("FilmsService", () => {
       find: jest.fn(),
       findById: jest.fn(),
       bulkWrite: jest.fn(),
+      create: jest.fn(),
+      findOne: jest.fn(),
+      findByIdAndUpdate: jest.fn(),
+      findByIdAndDelete: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -165,6 +174,80 @@ describe("FilmsService", () => {
       );
 
       expect(httpService.get).toHaveBeenCalled();
+    });
+  });
+
+  describe("createFilm", () => {
+    it("should create a new film", async () => {
+      filmModel.findOne.mockResolvedValue(null);
+      filmModel.create.mockResolvedValue(createFilmMock as any);
+
+      const result = await filmsService.createFilm(createFilmMock);
+
+      expect(filmModel.findOne).toHaveBeenCalledWith({
+        title: createFilmMock.title,
+      });
+      expect(filmModel.create).toHaveBeenCalledWith(createFilmMock);
+      expect(result).toEqual(createFilmMock);
+    });
+
+    it("should throw BadRequestException if the film already exists", async () => {
+      filmModel.findOne.mockResolvedValue(createFilmMock as any);
+
+      await expect(filmsService.createFilm(createFilmMock)).rejects.toThrow(
+        BadRequestException
+      );
+
+      expect(filmModel.findOne).toHaveBeenCalledWith({
+        title: createFilmMock.title,
+      });
+      expect(filmModel.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("updateFilm", () => {
+    it("should update the film by id", async () => {
+      const updateFilmMock = { title: "Updated Film" };
+      filmModel.findByIdAndUpdate.mockResolvedValue(updateFilmMock as any);
+
+      const result = await filmsService.updateFilm(
+        "validMongoId",
+        updateFilmMock
+      );
+
+      expect(filmModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        "validMongoId",
+        updateFilmMock,
+        { new: true }
+      );
+      expect(result).toEqual(updateFilmMock);
+    });
+
+    it("should throw NotFoundException if the film is not found", async () => {
+      const updateFilmMock = { title: "Updated Film" };
+      filmModel.findByIdAndUpdate.mockResolvedValue(null);
+
+      await expect(
+        filmsService.updateFilm("nonexistentId", updateFilmMock)
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe("deleteFilm", () => {
+    it("should delete the film by id", async () => {
+      filmModel.findByIdAndDelete.mockResolvedValue({} as any);
+
+      await filmsService.deleteFilm("validMongoId");
+
+      expect(filmModel.findByIdAndDelete).toHaveBeenCalledWith("validMongoId");
+    });
+
+    it("should throw NotFoundException if the film is not found", async () => {
+      filmModel.findByIdAndDelete.mockResolvedValue(null);
+
+      await expect(filmsService.deleteFilm("nonexistentId")).rejects.toThrow(
+        NotFoundException
+      );
     });
   });
 });
