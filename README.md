@@ -9,7 +9,7 @@ This is a **NestJS** application built to provide a CRUD API for users and Star 
 Ensure you have the following installed on your system:
 
 - **Node.js** (v16 or later)
-- **npm****
+- **npm**
 - **Git**
 
 ---
@@ -25,7 +25,7 @@ Ensure you have the following installed on your system:
    ```bash
    npm install
    ```
-3. Setup the environment variables by creating a .env file in the project root. Ask to the admin of this project for this variables.
+3. Setup the environment variables by creating a .env file in the project root. Ask to the admin of this project for these variables.
 
 ## Running the Application
 
