@@ -44,6 +44,8 @@ describe("FilmsService", () => {
       bulkWrite: jest.fn(),
       create: jest.fn(),
       findOne: jest.fn(),
+      findByIdAndUpdate: jest.fn(),
+      findByIdAndDelete: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -200,6 +202,52 @@ describe("FilmsService", () => {
         title: createFilmMock.title,
       });
       expect(filmModel.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("updateFilm", () => {
+    it("should update the film by id", async () => {
+      const updateFilmMock = { title: "Updated Film" };
+      filmModel.findByIdAndUpdate.mockResolvedValue(updateFilmMock as any);
+
+      const result = await filmsService.updateFilm(
+        "validMongoId",
+        updateFilmMock
+      );
+
+      expect(filmModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        "validMongoId",
+        updateFilmMock,
+        { new: true }
+      );
+      expect(result).toEqual(updateFilmMock);
+    });
+
+    it("should throw NotFoundException if the film is not found", async () => {
+      const updateFilmMock = { title: "Updated Film" };
+      filmModel.findByIdAndUpdate.mockResolvedValue(null);
+
+      await expect(
+        filmsService.updateFilm("nonexistentId", updateFilmMock)
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe("deleteFilm", () => {
+    it("should delete the film by id", async () => {
+      filmModel.findByIdAndDelete.mockResolvedValue({} as any);
+
+      await filmsService.deleteFilm("validMongoId");
+
+      expect(filmModel.findByIdAndDelete).toHaveBeenCalledWith("validMongoId");
+    });
+
+    it("should throw NotFoundException if the film is not found", async () => {
+      filmModel.findByIdAndDelete.mockResolvedValue(null);
+
+      await expect(filmsService.deleteFilm("nonexistentId")).rejects.toThrow(
+        NotFoundException
+      );
     });
   });
 });

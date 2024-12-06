@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -44,6 +45,13 @@ export class FilmsController {
   ) {
     const film = await this.filmsService.updateFilm(id, updateFilmDto);
     return mapFilmToDto(film);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @Delete(":id")
+  async deleteFilm(@Param("id", ValidateObjectIdPipe) id: string) {
+    return this.filmsService.deleteFilm(id);
   }
 
   @Get()
