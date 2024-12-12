@@ -24,7 +24,7 @@ import {
   ApiParam,
   ApiResponse,
 } from "@nestjs/swagger";
-import { FILMS_EXAMPLES } from "./films.examples";
+import { FILMS_EXAMPLES } from "./examples/films.examples";
 
 @Controller("films")
 export class FilmsController {

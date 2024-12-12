@@ -12,7 +12,7 @@ import { UsersService } from "src/users/users.service";
 import { LoginDto } from "./dto/login.dto";
 import { mapCreateUserResponse } from "./mappers/user.mapper";
 import { ApiBody, ApiOperation, ApiResponse } from "@nestjs/swagger";
-import { AUTH_EXAMPLES } from "./auth.examples";
+import { AUTH_EXAMPLES } from "./examples/auth.examples";
 
 @Controller("auth")
 export class AuthController {
